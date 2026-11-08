@@ -1,0 +1,6 @@
+{
+  "name": "ZetaCard",
+  "description": "The complete digital card, luxury invitation, and interactive menu creation platform founded by Shahid Tufail.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.role == 'admin' || 
+         request.auth.token.email in ['zetacard@outlook.com', 'founder@zetacard.com']);
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 2. Cards collection (Public read for published cards; owner/admin for write)
+    match /cards/{cardId} {
+      allow read: if resource.data.status == 'published' || isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+
+    // 3. Bookings collection
+    // Anyone can create a public booking for a published card.
+    // Only the card owner or administrator can view or update status.
+    match /bookings/{bookingId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated() && (
+        isOwner(resource.data.ownerId) || isAdmin()
+      );
+    }
+
+    // 4. Enquiries collection
+    // Anyone can send an enquiry. Only card owner or admin can read/manage.
+    match /enquiries/{enquiryId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated() && (
+        isOwner(resource.data.ownerId) || isAdmin()
+      );
+    }
+
+    // 5. Contacts collection
+    match /contacts/{contactId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated() && (
+        isOwner(resource.data.ownerId) || isAdmin()
+      );
+    }
+
+    // 6. Analytics Events collection (Append-only)
+    match /cardEvents/{eventId} {
+      allow create: if true;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}

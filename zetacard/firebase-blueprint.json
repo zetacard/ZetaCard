@@ -1,0 +1,82 @@
+{
+  "project": "ZetaCard",
+  "founder": "Shahid Tufail",
+  "version": "1.0.0",
+  "firestore": {
+    "collections": {
+      "users": {
+        "description": "User profiles, roles, and settings",
+        "fields": {
+          "id": "string (uid)",
+          "email": "string",
+          "displayName": "string",
+          "role": "string ('admin' | 'user')",
+          "avatarUrl": "string (optional)",
+          "createdAt": "timestamp"
+        }
+      },
+      "cards": {
+        "description": "Digital visiting cards, business cards, invitations, and menus",
+        "fields": {
+          "id": "string",
+          "userId": "string",
+          "category": "string ('visiting' | 'business' | 'wedding' | 'birthday' | 'event' | 'menu')",
+          "templateId": "string",
+          "title": "string",
+          "slug": "string",
+          "status": "string ('draft' | 'published')",
+          "views": "number",
+          "profile": "map",
+          "customization": "map",
+          "eventDetails": "map (optional)",
+          "menuDetails": "map (optional)",
+          "createdAt": "timestamp",
+          "updatedAt": "timestamp"
+        },
+        "indexes": [
+          { "fields": [{ "field": "userId", "order": "ASCENDING" }, { "field": "updatedAt", "order": "DESCENDING" }] },
+          { "fields": [{ "field": "status", "order": "ASCENDING" }, { "field": "views", "order": "DESCENDING" }] }
+        ]
+      },
+      "bookings": {
+        "description": "Public bookings, RSVPs, and table reservations",
+        "fields": {
+          "id": "string",
+          "cardId": "string",
+          "ownerId": "string",
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "date": "string",
+          "time": "string",
+          "guests": "number",
+          "notes": "string",
+          "status": "string ('pending' | 'confirmed' | 'cancelled')",
+          "createdAt": "timestamp"
+        }
+      },
+      "enquiries": {
+        "description": "Direct enquiries and messages received via digital cards",
+        "fields": {
+          "id": "string",
+          "cardId": "string",
+          "ownerId": "string",
+          "name": "string",
+          "email": "string",
+          "subject": "string",
+          "message": "string",
+          "status": "string ('new' | 'replied' | 'archived')",
+          "createdAt": "timestamp"
+        }
+      },
+      "cardEvents": {
+        "description": "Anonymous tracking metrics and visitor analytics",
+        "fields": {
+          "cardId": "string",
+          "eventType": "string ('view' | 'qr_scan' | 'vcard_download' | 'share')",
+          "timestamp": "timestamp"
+        }
+      }
+    }
+  }
+}
